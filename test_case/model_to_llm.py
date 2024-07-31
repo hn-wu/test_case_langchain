@@ -1,4 +1,4 @@
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain_community.llms import QianfanLLMEndpoint
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
