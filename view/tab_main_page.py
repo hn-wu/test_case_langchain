@@ -2,6 +2,7 @@ import os
 import gradio as gr
 
 from view.pipeline_Wrapper import Pipeline_Wrapper
+from test_case.get_vectordb import get_vectordb
 
 def tab_main_page(config):
     """
@@ -46,7 +47,7 @@ def tab_main_page(config):
         inputs = gr.Textbox(label='', value='', lines=1, interactive=False)
         details = gr.Textbox(label="简答描述一下测试活动", lines=4, placeholder="可以选择在这里输入更多细节", interactive=True)
         submit_create = gr.Button("创建测试活动")
-        file = gr.File()
+        files = gr.Files()
         submit_start = gr.Button("开始测试")
     
     def load_input_options(e=''):
@@ -96,26 +97,36 @@ def tab_main_page(config):
         llm = get_llm_by_inputs(inputs)
         llm.get_writer('td').init_by_details(details)
         llm.save('td')
-        config['lngpt'] = llm
+        config['llm'] = llm
         gr.Info(f"创建测试活动：{inputs}成功，接下来输入需求文档构建向量数据库")
         
     submit_create.click(on_submit_create, [inputs, details], None)
 
-    def on_submit_start(input_options,file):
+    def on_submit_start(input_options,files):
         '''
         选择加载测试活动名，或修改TdWriter对象中的配置，并保存
         params:
             input_options[str]:选择要加载的测试活动
         '''
-        generate_file(input_options, file)
-        llm = config['lngpt']
+        if not input_options:
+            gr.Info("请选择测试活动")
+            return
+        target_directory  = f"../knowledge_db/{input_options}"
+        persist_path = f"../vector_db/chroma/{input_options}"
+        embedding = config.get("embedding")
+        embedding_key = config.get("embedding_key")
+        generate_files(target_directory, files)
+        get_vectordb(target_directory, persist_path, embedding, embedding_key)
         gr.Info(f"已经上传文档成功，接下来继续上传文件，或下一步去创建缺陷知识库吧")
         
-    def generate_file(input_options, file):
-        file_path = f"../knowledge_db/{input_options}/{file}"
-        print(file_path)
+    def generate_files(target_directory, files):
+        import shutil
+        if not os.path.exists(target_directory):
+            os.makedirs(target_directory)
+        for source_file in files:
+            shutil.copy2(source_file, target_directory)
 
-    submit_start.click(on_submit_start, [input_options,file], None)
+    submit_start.click(on_submit_start, [input_options,files], None)
 
     def get_llm_by_inputs(inputs):
         '''

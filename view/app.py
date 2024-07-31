@@ -20,7 +20,20 @@ with gr.Blocks() as demo:
     gr.Markdown("# Test-Case-Langchain 1.0")
     with gr.Accordion("使用指南"):
         gr.Markdown(info)
-    config = {'llm': None, 'chat_context_limit': 2000, 'auto_compress_context': True}
+        
+    config = {
+        'llm': None,
+        'model':"ERNIE-Speed-128K",  # 使用的模型名称
+        'temperature':0.1,  # 控制生成的随机性
+        'top_k':5,  # 返回检索的前k个相似文档
+        'api_key':"clLcz3pG0KETHqhDkFUURfSn",  # API密钥
+        'wenxin_secret_key':"kjmDsDF73j5LnCW2LADz2EIOreYHtaGS",  # 文心秘钥
+        'embedding':"qianfan",  # 使用的嵌入模型
+        "embedding_key" : {
+            "qianfan_ak":"clLcz3pG0KETHqhDkFUURfSn",
+            "qianfan_sk":"kjmDsDF73j5LnCW2LADz2EIOreYHtaGS",
+        }
+    }
     tab_main_page(config)
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@ class Client():
         self.wenxin_secret_key = wenxin_secret_key
         self.embedding = embedding
         self.embedding_key = embedding_key
-        self.vectordb = get_vectordb(self.file_path, self.persist_path, self.embedding,self.embedding_key)
+        self.vectordb = get_vectordb(self.file_path, self.persist_path, self.embedding, self.embedding_key)
     
     def clear_history(self):
         "清空历史记录"
