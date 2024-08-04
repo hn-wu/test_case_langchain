@@ -15,7 +15,7 @@ class Client(StreamingStdOutCallbackHandler):
         while not self.finish:
             if self.tokens:
                 data = self.tokens.pop(0)
-                yield data
+                yield from data
             else:
                 self.finish = True
                 time.sleep(0.2)

@@ -21,6 +21,11 @@ class Pipeline:
         self.tp_writer = self.get_tp_writer(self.td_writer)
         self.case_writer = self.get_case_writer(self.td_writer, self.tp_writer)
     
+    def update_vectordb(self, file_path, persist_path):
+        self.td_writer.update_llm_vectordb(file_path, persist_path)
+        self.tp_writer.update_llm_vectordb(file_path, persist_path)
+        self.case_writer.update_llm_vectordb(file_path, persist_path)
+    
     def get_writer(self, layer_name):
         if layer_name == 'td':
             return self.td_writer

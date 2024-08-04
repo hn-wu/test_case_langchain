@@ -3,13 +3,35 @@ from test_case.history_chain_self import Client as HistoryChat
 from common.untils import json_load, json_dumps, json_save
 
 class Writer:
-    def __init__(self, system_prompt, output_path, config):
+    def __init__(self, output_path, config):
         self.output_path = output_path
         self.config = config
-        self.system_prompt = system_prompt
-        self.chat_history = {
-            'system_messages': [{'role':'system', 'content': system_prompt}],
-            }
+        self.chat_history = []
+        self.llm_client = self.init_llm_client(config=config)
+        
+    def init_llm_client(self,config):
+        client = HistoryChat(
+            model=config.get("model"),
+            temperature=config.get("temperature"),
+            top_k=config.get("top_k"),
+            chat_history=self.chat_history,
+            file_path=config.get("file_path"),
+            persist_path=config.get("persist_path"),
+            api_key=config.get("api_key"),
+            wenxin_secret_key=config.get("wenxin_secret_key"),
+            embedding=config.get("embedding"),
+            embedding_key=config.get("embedding_key")
+        )
+        return client
+
+    def update_system_prompt(self, system_prompt):
+        self.llm_client.update_system_prompt(system_prompt)
+
+    def update_llm_vectordb(self, file_path, persist_path):
+        self.llm_client.update_vectordb(file_path=file_path, persist_path=persist_path)
+
+    def update_llm_chat_history(self, chat_history):
+        self.llm_client.update_history(chat_history)
     
     def update_config(self, **kwargs):
         self.config.update(**kwargs)
@@ -52,8 +74,20 @@ class Writer:
         else:
             return list(self.chat_history[chat_id])
     
-    def chat(self):
-        """
-        调用大模型
-        """
-        pass
+    def get_model(self):
+        return self.get_config('model')
+    
+    def chat(self, question):
+        llm = self.llm_client
+        yield from llm.answer(question)
+
+    def discuss(self, prompt):
+        messages = self.get_chat_history()
+        messages.append({'role':'user', 'content': prompt})  
+        response_msgs = yield from self.chat(messages, response_json=False)
+        context_messages = response_msgs
+        self.update_chat_history(context_messages)
+        yield context_messages
+    
+    def json_dumps(self, json_object):
+        return json_dumps(json_object)

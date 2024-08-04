@@ -7,6 +7,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(__file__, '../..')))
 
 from view.tab_main_page import tab_main_page
+from view.tab_td_page import tab_td_page
 
 info = \
 """
@@ -35,6 +36,7 @@ with gr.Blocks() as demo:
         }
     }
     tab_main_page(config)
+    tab_td_page(config)
 
 if __name__ == "__main__":
     demo.queue()

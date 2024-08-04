@@ -77,6 +77,8 @@ def tab_main_page(config):
             inputs = evt.value
             llm = get_llm_by_inputs(inputs)
             details = llm.get_writer('td').get_input_context()
+            if not config.get('llm'):
+                config['llm'] = llm
             return gr.Textbox(interactive=False), gr.Textbox(details)
 
     input_options.select(on_select_input_options, None, [inputs, details])
@@ -116,6 +118,7 @@ def tab_main_page(config):
         embedding = config.get("embedding")
         embedding_key = config.get("embedding_key")
         generate_files(target_directory, files)
+        # 更新向量数据库
         get_vectordb(target_directory, persist_path, embedding, embedding_key)
         gr.Info(f"已经上传文档成功，接下来继续上传文件，或下一步去创建缺陷知识库吧")
         
@@ -135,7 +138,11 @@ def tab_main_page(config):
         如果存在，就返回之前保存的对象
         '''
         output_path = f"../chathistory/{inputs}"
-        llm = Pipeline_Wrapper(output_path ,config)
+        file_path  = f"../knowledge_db/{inputs}"
+        persist_path = f"../vector_db/chroma/{inputs}"
+        config["file_path"] =  file_path
+        config["persist_path"] =  persist_path
+        llm = Pipeline_Wrapper(output_path, config)
         if not os.path.exists(output_path):
             os.makedirs(output_path)
             llm.init()

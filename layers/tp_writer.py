@@ -4,9 +4,10 @@ class TpWriter(Writer):
 
     def __init__(self, output_path, config):
         system_prompt = f'生成测试用例标题'
-        super().__init__(system_prompt, output_path, config)
+        super().__init__(output_path, config)
         self.tp_content = {}
         self.load()
+        self.update_system_prompt(system_prompt)
     
     def init_by_td_writer(self, tp_writer):
         self.tp_writer = tp_writer
