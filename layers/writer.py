@@ -24,8 +24,12 @@ class Writer:
         )
         return client
 
-    def update_system_prompt(self, system_prompt):
-        self.llm_client.update_system_prompt(system_prompt)
+    def update_system_prompt(self, system_prompt, out_prompt):
+        chat_prompt = {
+            "input": system_prompt,
+            "output": out_prompt
+        }
+        self.llm_client.update_chat_prompt(chat_prompt)
 
     def update_llm_vectordb(self, file_path, persist_path):
         self.llm_client.update_vectordb(file_path=file_path, persist_path=persist_path)

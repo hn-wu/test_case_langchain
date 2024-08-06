@@ -3,7 +3,9 @@ from langchain.memory import ConversationBufferMemory
 from test_case.model_to_llm import model_to_llm
 from test_case.get_vectordb import get_vectordb
 from test_case.chain_stream_handler import Client as ChainStreamHandler
-from langchain.prompts import PromptTemplate
+from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder
+from langchain_core.messages import SystemMessage
+
 import re
 
 class Client():
@@ -37,8 +39,8 @@ class Client():
         self.vectordb = get_vectordb(self.file_path, self.persist_path, self.embedding, self.embedding_key)
     
 
-    def update_system_prompt(self, system_prompt):
-        self.system_prompt = system_prompt
+    def update_chat_prompt(self, chat_prompt):
+        self.chat_prompt = chat_prompt
 
     def update_vectordb(self, file_path:str=None, persist_path:str=None):
         self.vectordb = get_vectordb(file_path, persist_path, self.embedding, self.embedding_key)
@@ -75,42 +77,33 @@ class Client():
         if temperature == None:
             temperature = self.temperature
 
-        # ConversationalRetrievalChain设置system_prompt
+        # 设置SystemMessage和chat_history
         # https://github.com/langchain-ai/langchain/discussions/13514
-        template = (
-            f"{self.system_prompt}"
-            "聊天历史: {chat_history}"
-            "问题: {question}"
-        )
-        # Create the prompt template
-        condense_question_prompt = PromptTemplate.from_template(template)
-
+        # https://datawhalechina.github.io/llm-cookbook/#/C3/3.%20%E5%82%A8%E5%AD%98%20Memory
+        # https://github.com/langchain-ai/langchain/issues/11975
+        memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+        if not self.chat_history:
+            memory.save_context({"input": self.chat_prompt.get("input")}, {"output": self.chat_prompt.get("output")})
         chainStreamHandler = ChainStreamHandler()
         llm = model_to_llm(self.model, temperature, streaming, chainStreamHandler,
                            self.api_key, self.wenxin_secret_key)
         # 可以直接传入聊天历史 https://python.langchain.com.cn/docs/modules/chains/popular/chat_vector_db
-        # memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
         retriever = self.vectordb.as_retriever(search_type="similarity", search_kwargs={'k': top_k})
+        # 设置prompt https://stackoverflow.com/questions/76175046/how-to-add-prompt-to-langchain-conversationalretrievalchain-chat-over-docs-with
         qa = ConversationalRetrievalChain.from_llm(
             llm=llm, 
             retriever=retriever,
-            condense_question_prompt=condense_question_prompt,
+            memory=memory,
             callbacks=[chainStreamHandler])
         # 流式响应 https://www.langchain.cn/t/topic/138
-        history = []
-        dialogue = self.chat_history
-        for i in range(len(dialogue) // 2):
-            user_turn = dialogue[i * 2]
-            system_turn = dialogue[i * 2 + 1]
-            history.append((f"{user_turn['content']}", f"{system_turn['content']}"))
-        qa.invoke({"question": question, "chat_history": history})
+        qa.invoke({"question": question})
         answer = ''
         for message in chainStreamHandler.generate_tokens():
             answer += message
             yield message
-        self.save_stream_answer(question, answer)
+        self.save_stream_answer(question, answer, memory)
 
-    def save_stream_answer(self,question,answer):
+    def save_stream_answer(self, question, answer, memory):
         """"
         根据历史记录
         arguments: 
@@ -118,8 +111,7 @@ class Client():
         - answer：模型回答
         """
         answer = re.sub(r"\\n", '<br/>', answer)
-        history_record = (question, answer)
-        self.chat_history.append(history_record)
+        self.chat_history = memory.load_memory_variables({})["chat_history"]
         
 
 

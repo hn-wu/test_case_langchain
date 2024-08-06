@@ -27,15 +27,43 @@ client = HistoryChat(
     embedding=embedding,
     embedding_key=embedding_key,
 )
+system_prompt = \
+    """
+    你是一名测试人员，我会根据输入文档和需求，以JSON格式输出需求的的检查点和测试因子
+    输出格式：
+    {
+    "需求名": "<与输入的需求名一致>", // 这个键必须存在，用于分析/反思
+    "<检查点>": { // 对需求的需要检查的地方进行说明
+    "检查目的": "<填写检查的目的什么，对用户有什么叫做>",
+    "检查入参": "<填充检查的参数规范有哪些>",
+    "检查期望结果": "<在该字符串中编写检查点的期望结果>"  // 描述必须是一个字符串，不能为字典或列表
+    },
+    // 对需求需要检查的地方进行发散，列举出尽可能多的检查点，不要遗漏用户场景
+    }"""  
+out_prompt = "好的，我明白了。现在，请您提供具体的输入文档和需求，我会根据这些信息为您生成相应的JSON格式检查点和测试因子。"  
+chat_prompt = {
+    "input": system_prompt,
+    "output": out_prompt
+}
+client.update_chat_prompt(chat_prompt)
 
 # 示例对话
-question1 = "我可以学习到关于提示工程的知识吗？"
+question1 = \
+    """
+    需求名： 用户登录系统优化
+    需求价值： 提高用户登录体验，减少登录失败率，提升用户满意度和留存率
+    实现思路：
+
+    增加社交账号一键登录功能（如微信、QQ、Facebook等）。
+    优化登录界面和流程，提供友好的用户引导。
+    增加忘记密码功能，方便用户找回密码。
+    增加多因素认证（如短信验证码、邮箱验证码等）提升账户安全性。
+    """
 print("Q: ", question1)
 answer = ''
 for partial_answer in client.answer(question1):
     answer += partial_answer
     print(partial_answer, end='')
-client.save_stream_answer(question1,answer)
 
 # 下一个问题，可以根据历史记录产生更好的回答
 question2 = "如果学不了提示工程，那是为什么；如果可以学到，给出学习路线"
@@ -44,5 +72,4 @@ answer = ''
 for partial_answer in client.answer(question2):
     answer += partial_answer
     print(partial_answer, end='') 
-client.save_stream_answer(question1,answer)
 
