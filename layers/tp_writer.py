@@ -3,16 +3,20 @@ from layers.writer import Writer
 class TpWriter(Writer):
 
     def __init__(self, output_path, config):
-        system_prompt = f'生成测试用例标题'
         super().__init__(output_path, config)
         self.tp_content = {}
         self.load()
-        self.update_system_prompt(system_prompt)
+        system_prompt = f'生成测试用例标题'
+        out_prompt = ""
+        self.update_system_prompt(system_prompt, out_prompt)
     
     def init_by_td_writer(self, tp_writer):
         self.tp_writer = tp_writer
     
     def get_input_context(self):
+        pass
+
+    def set_output(self, td_content):
         pass
     
     def get_attrs_needed_to_save(self):

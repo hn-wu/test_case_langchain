@@ -1,8 +1,0 @@
-{
- "system_messages": [
-  {
-   "role": "system",
-   "content": "生成测试用例步骤，组成完整的测试用例"
-  }
- ]
-}

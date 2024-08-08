@@ -2,17 +2,21 @@ from layers.writer import Writer
 
 class CaseWriter(Writer):
     def __init__(self, output_path, config):
-        system_prompt = f'生成测试用例步骤，组成完整的测试用例'
         super().__init__(output_path, config)
         self.case_content = {}
         self.load()
-        self.update_system_prompt(system_prompt)
+        system_prompt = f'生成测试用例步骤，组成完整的测试用例'
+        out_prompt = ""
+        self.update_system_prompt(system_prompt, out_prompt)
 
     def init_by_td_and_tp_writer(self, td_writer, tp_writer):
         self.td_writer = td_writer
         self.tp_writer = tp_writer
     
     def get_input_context(self):
+        pass
+
+    def set_output(self, td_content):
         pass
     
     def get_attrs_needed_to_save(self):

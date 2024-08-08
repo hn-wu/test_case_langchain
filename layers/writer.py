@@ -46,6 +46,9 @@ class Writer:
     def get_input_context(self) -> str:
         raise NotImplementedError
     
+    def set_output(self, e):
+        raise NotImplementedError
+    
     def load(self, output_path=None):
         '''
         加载之前调用writer的入参
@@ -84,14 +87,6 @@ class Writer:
     def chat(self, question):
         llm = self.llm_client
         yield from llm.answer(question)
-
-    def discuss(self, prompt):
-        messages = self.get_chat_history()
-        messages.append({'role':'user', 'content': prompt})  
-        response_msgs = yield from self.chat(messages, response_json=False)
-        context_messages = response_msgs
-        self.update_chat_history(context_messages)
-        yield context_messages
     
     def json_dumps(self, json_object):
         return json_dumps(json_object)

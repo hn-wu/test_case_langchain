@@ -32,11 +32,17 @@ def tab_td_page(config):
         td_writer = get_writer()
         return td_writer.get_output()
 
+    def set_output_text(chat_outputs):
+        td_writer = get_writer()
+        td_writer.set_output(chat_outputs)
+        return get_output_text()
+
     def on_submit(inputs):
         td_writer = get_writer()
         chat_outputs = ''
         for chat_output in td_writer.chat(question=inputs):
             chat_outputs += chat_output
+        chat_outputs = set_output_text(chat_outputs)
         return chat_outputs
 
     def save():
@@ -46,16 +52,15 @@ def tab_td_page(config):
         with gr.Row():
             with gr.Column():
                 placeholder = \
-                """
-                    需求名： 用户登录系统优化
-                    需求价值： 提高用户登录体验，减少登录失败率，提升用户满意度和留存率
-                    实现思路：
-                    1. 增加社交账号一键登录功能（如微信、QQ、Facebook等）。
-                    2. 优化登录界面和流程，提供友好的用户引导。
-                    3. 增加忘记密码功能，方便用户找回密码。
-                    4. 增加多因素认证（如短信验证码、邮箱验证码等）提升账户安全性。
-                """
+"""
+需求名： 命令行配置聚合口
+需求价值： 简化聚合口配置
+需求验收条件：
+1. 输入ip、netmask、mtu、聚合口成员、聚合模式
+2. 支持创建、修改、删除聚合口
+3. 不同主机之间聚合口正常连通
+"""
                 inputs = gr.Textbox(label="说明你的Story需求", placeholder=placeholder, lines=10, interactive=True)
             output = gr.Textbox(label="生成的缺陷知识库", lines=10, interactive=True)
         start_button = gr.Button("开始")
-        start_button.click(on_submit, [inputs], [output]).success(save)
+        start_button.click(on_submit, [inputs], [output]).success(save, [output])

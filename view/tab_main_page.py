@@ -46,7 +46,7 @@ def tab_main_page(config):
         input_options = gr.Radio(label='', choices=[])
         inputs = gr.Textbox(label='', value='', lines=1, interactive=False)
         details = gr.Textbox(label="简答描述一下测试活动", lines=4, placeholder="可以选择在这里输入更多细节", interactive=True)
-        submit_create = gr.Button("创建测试活动")
+        submit_create = gr.Button("创建或修改测试活动")
         files = gr.Files()
         submit_start = gr.Button("开始测试")
     
