@@ -4,7 +4,6 @@ from test_case.model_to_llm import model_to_llm
 from test_case.get_vectordb import get_vectordb
 from test_case.chain_stream_handler import ChainStreamHandler
 from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT, QA_PROMPT
-from langchain.chains.llm import LLMChain
 from langchain.chains.question_answering import load_qa_chain
 
 class Client():

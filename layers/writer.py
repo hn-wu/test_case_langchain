@@ -1,5 +1,6 @@
 import os
-from test_case.history_chain_self import Client as HistoryChat
+from test_case.chain_with_history import Client as ChatWithHistory
+from test_case.chain_with_vectordb import Client as ChatWithVectordb
 from common.untils import json_load, json_dumps, json_save
 
 class Writer:
@@ -7,10 +8,24 @@ class Writer:
         self.output_path = output_path
         self.config = config
         self.chat_history = []
-        self.llm_client = self.init_llm_client(config=config)
+        self.llm_history_client = self.init_llm_client(config=config)
+        self.llm_vectordb_client = self.init_llm_vectordb_client(config=config)
         
     def init_llm_client(self,config):
-        client = HistoryChat(
+        client = ChatWithHistory(
+            model=config.get("model"),
+            temperature=config.get("temperature"),
+            top_k=config.get("top_k"),
+            chat_history=self.chat_history,
+            api_key=config.get("api_key"),
+            wenxin_secret_key=config.get("wenxin_secret_key"),
+            embedding=config.get("embedding"),
+            embedding_key=config.get("embedding_key")
+        )
+        return client
+    
+    def init_llm_vectordb_client(self,config):
+        client = ChatWithVectordb(
             model=config.get("model"),
             temperature=config.get("temperature"),
             top_k=config.get("top_k"),
@@ -29,13 +44,13 @@ class Writer:
             "input": system_prompt,
             "output": out_prompt
         }
-        self.llm_client.update_chat_prompt(chat_prompt)
+        self.llm_history_client.update_chat_prompt(chat_prompt)
 
     def update_llm_vectordb(self, file_path, persist_path):
-        self.llm_client.update_vectordb(file_path=file_path, persist_path=persist_path)
+        self.llm_history_client.update_vectordb(file_path=file_path, persist_path=persist_path)
 
     def update_llm_chat_history(self, chat_history):
-        self.llm_client.update_history(chat_history)
+        self.llm_history_client.update_history(chat_history)
     
     def update_config(self, **kwargs):
         self.config.update(**kwargs)
@@ -85,7 +100,7 @@ class Writer:
         return self.get_config('model')
     
     def chat(self, question):
-        llm = self.llm_client
+        llm = self.llm_history_client
         yield from llm.answer(question)
     
     def json_dumps(self, json_object):

@@ -1,4 +1,4 @@
-from test_case.chain_self import Client as ChatWithVectordb
+from test_case.chain_with_vectordb import Client as ChatWithVectordb
 
 # 定义必要的参数
 model = "ERNIE-Speed-128K"  # 使用的模型名称

@@ -1,4 +1,4 @@
-from test_case.history_chain_self import Client as ChatWithHistory
+from test_case.chain_with_history import Client as ChatWithHistory
 # 定义必要的参数
 model = "ERNIE-Speed-128K"  # 使用的模型名称
 temperature = 0.1  # 控制生成的随机性
