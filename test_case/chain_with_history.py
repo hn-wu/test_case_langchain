@@ -93,7 +93,12 @@ class Client():
         qa.invoke({"input": question})
         for message in chainStreamHandler.generate_tokens():
             yield message
-        self.chat_history = self.memory.load_memory_variables({})["history"]
+        n = len(self.memory.load_memory_variables({})["history"])
+        for i in range(0,n,2):
+            msg = self.memory.load_memory_variables({})["history"][i].content
+            response = self.memory.load_memory_variables({})["history"][i+1].content
+            self.chat_history.append((msg,response))
+
         
 
 

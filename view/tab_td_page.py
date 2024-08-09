@@ -63,4 +63,4 @@ def tab_td_page(config):
                 inputs = gr.Textbox(label="说明你的Story需求", placeholder=placeholder, lines=10, interactive=True)
             output = gr.Textbox(label="生成的缺陷知识库", lines=10, interactive=True)
         start_button = gr.Button("开始")
-        start_button.click(on_submit, [inputs], [output]).success(save, [output])
+        start_button.click(on_submit, [inputs], [output]).success(save)

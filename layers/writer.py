@@ -102,6 +102,7 @@ class Writer:
     def chat(self, question):
         llm = self.llm_history_client
         yield from llm.answer(question)
+        self.chat_history = self.llm_history_client.chat_history
     
     def json_dumps(self, json_object):
         return json_dumps(json_object)
