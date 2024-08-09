@@ -79,7 +79,7 @@ def tab_main_page(config):
             details = llm.get_writer('td').get_input_context()
             if not config.get('llm'):
                 config['llm'] = llm
-            return gr.Textbox(interactive=False), gr.Textbox(details)
+            return gr.Textbox(interactive=False), gr.Textbox(details), gr.Info(f"加载测试项目成功")
 
     input_options.select(on_select_input_options, None, [inputs, details])
     

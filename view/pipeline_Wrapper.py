@@ -16,7 +16,8 @@ class Pipeline_Wrapper(Pipeline):
         self.layers = {
             'td': {'curr_checkpoint_i': -1},
             'tp': {'curr_checkpoint_i': -1},
-            'case': {'curr_checkpoint_i': -1}
+            'case': {'curr_checkpoint_i': -1},
+            'vectordb': {'curr_checkpoint_i': -1}
         }
 
     def init(self):

@@ -18,6 +18,7 @@ class Pipeline:
         3. CaseWriter：创建测试用例+具体步骤
         """
         self.td_writer = self.get_td_writer()
+        self.vectordb_writer = self.get_vectordb_writer()
         self.tp_writer = self.get_tp_writer(self.td_writer)
         self.case_writer = self.get_case_writer(self.td_writer, self.tp_writer)
     
@@ -33,6 +34,8 @@ class Pipeline:
             return self.tp_writer
         elif layer_name == 'case':
             return self.case_writer
+        elif layer_name == 'vectordb':
+            return self.vectordb_writer
         else:
             raise ValueError(f"layer:{layer_name} 不存在!")
 
@@ -42,6 +45,13 @@ class Pipeline:
             config = self.config
         )
         return td_writer
+
+    def get_vectordb_writer(self):
+        vectordb_writer = TdWriter(
+            output_path=os.path.join(self.output_path, 'vectordb_writer'),
+            config = self.config
+        )
+        return vectordb_writer
     
     def get_tp_writer(self, td):
         tp_writer = TpWriter(

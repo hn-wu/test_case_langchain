@@ -1,8 +1,4 @@
-import os
 import gradio as gr
-
-from view.pipeline_Wrapper import Pipeline_Wrapper
-from test_case.get_vectordb import get_vectordb
 
 def tab_td_page(config):
     """
