@@ -37,7 +37,7 @@ def tab_main_page(config):
         return
             option[组件]:输入的操作['新建测试活动', '加载测试活动']
             input_optins[组件]:选择你加载的测试活动
-            submit_create[组件]:点击按钮创建测试项目
+            submit_create[组件]:点击按钮创建测试活动
             inputs[组件]:新建的测试活动
             details[组件]:传入文档【选择加载测试活动后才会显示】
             submit_start[组件]:点击按钮开始测试
@@ -61,13 +61,14 @@ def tab_main_page(config):
         '''
         选择不同的选项，返回不同的前端输入组件
         '''
+        details = ''
         if evt.value == '加载测试活动':
-            return load_input_options(''), gr.Textbox(label='', value='', interactive=False)
+            return load_input_options(''), gr.Textbox(label='', value='', interactive=False), gr.Textbox(details)
         else:
-            return gr.Radio(label='', choices=[]), gr.Textbox(label="输入测试活动名", value='', interactive=True)
+            return gr.Radio(label='', choices=[]), gr.Textbox(label="输入测试活动名", value='', interactive=True), gr.Textbox(details)
     
     # 组件 - 操作 - 触发函数 - 输入 - 输出
-    option.select(on_select_option, None, [input_options, inputs])
+    option.select(on_select_option, None, [input_options, inputs, details])
 
     def on_select_input_options(evt: gr.SelectData):
         '''
@@ -79,7 +80,7 @@ def tab_main_page(config):
             details = llm.get_writer('td').get_input_context()
             if not config.get('llm'):
                 config['llm'] = llm
-            return gr.Textbox(interactive=False), gr.Textbox(details), gr.Info(f"加载测试项目成功")
+            return gr.Textbox(interactive=False), gr.Textbox(details), gr.Info(f"加载测试活动成功")
 
     input_options.select(on_select_input_options, None, [inputs, details])
     
