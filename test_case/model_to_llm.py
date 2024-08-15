@@ -1,5 +1,6 @@
 from langchain_community.chat_models import ChatOpenAI
 from langchain_community.llms import QianfanLLMEndpoint
+from langchain_community.llms import Ollama
 
 
 def model_to_llm(model:str=None, temperature:float=0.0, streaming:bool=True, chainStreamHandler:object=None,
@@ -19,6 +20,8 @@ def model_to_llm(model:str=None, temperature:float=0.0, streaming:bool=True, cha
             else:
                 llm = QianfanLLMEndpoint(model=model, temperature = temperature, streaming=False, 
                                         qianfan_ak=api_key, qianfan_sk=wenxin_secret_key)
+        elif model in ['qwen2:7b']:
+             llm = Ollama(model=model)
         else:
             raise ValueError(f"model{model} not support!!!")
         return llm
